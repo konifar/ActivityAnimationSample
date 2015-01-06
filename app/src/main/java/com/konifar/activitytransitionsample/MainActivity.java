@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 
@@ -42,18 +41,13 @@ public class MainActivity extends Activity {
     private void initGridView() {
         adapter = new PhotosAdapter(this);
         mGridMain.setAdapter(adapter);
-        mGridMain.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                PhotoModel photo = adapter.getItem(position);
-                DetailActivity.start(MainActivity.this, view, photo);
-            }
-        });
     }
 
     static class ViewHolder {
         @InjectView(R.id.img_preview)
         AspectRatioImageView mImgPreview;
+        @InjectView(R.id.clicker_img_preview)
+        View mClickerImgPreview;
 
         ViewHolder(View view) {
             ButterKnife.inject(this, view);
@@ -79,6 +73,13 @@ public class MainActivity extends Activity {
             }
 
             holder.mImgPreview.setImageResource(photo.resId);
+            holder.mClickerImgPreview.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    DetailActivity.start(MainActivity.this, v, photo);
+                }
+            });
+
             view.setTag(holder);
 
             return view;

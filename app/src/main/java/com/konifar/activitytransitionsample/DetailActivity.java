@@ -1,13 +1,17 @@
 package com.konifar.activitytransitionsample;
 
-import android.animation.TimeInterpolator;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.Interpolator;
 import android.widget.ImageView;
+
+import com.nineoldandroids.animation.Animator;
+import com.nineoldandroids.animation.AnimatorListenerAdapter;
+import com.nineoldandroids.view.ViewPropertyAnimator;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -21,9 +25,8 @@ public class DetailActivity extends Activity {
     private static final String EXTRA_WIDTH = "extra_width";
     private static final String EXTRA_HEIGHT = "extra_height";
 
-    private static final TimeInterpolator sDecelerator = new DecelerateInterpolator();
-
-    private static final int ANIM_DURATION = 800;
+    private static final long ANIMATION_DURATION = 300;
+    private static final Interpolator decelerateInterpolator = new DecelerateInterpolator();
 
     @InjectView(R.id.img_preview)
     ImageView mImgPreview;
@@ -34,14 +37,15 @@ public class DetailActivity extends Activity {
     private float mHeightScale;
     private int mOriginalOrientation;
 
-    public static void start(Activity activity, View transitionView, PhotoModel info) {
+    public static void start(Activity activity, View transitionView, PhotoModel model) {
+        Intent intent = new Intent(activity, DetailActivity.class);
+
         int[] screenLocation = new int[2];
         transitionView.getLocationOnScreen(screenLocation);
-        Intent intent = new Intent(activity, DetailActivity.class);
         int orientation = activity.getResources().getConfiguration().orientation;
 
+        intent.putExtra(EXTRA_RESOURCE_ID, model.resId);
         intent.putExtra(EXTRA_ORIENTATION, orientation);
-        intent.putExtra(EXTRA_RESOURCE_ID, info.resId);
         intent.putExtra(EXTRA_LEFT, screenLocation[0]);
         intent.putExtra(EXTRA_TOP, screenLocation[1]);
         intent.putExtra(EXTRA_WIDTH, transitionView.getWidth());
@@ -80,7 +84,7 @@ public class DetailActivity extends Activity {
                     mWidthScale = (float) thumbnailWidth / (mImgPreview.getWidth());
                     mHeightScale = (float) thumbnailHeight / mImgPreview.getHeight();
 
-                    runEnterAnimation();
+                    startEnterAnimation();
 
                     return true;
                 }
@@ -88,9 +92,7 @@ public class DetailActivity extends Activity {
         }
     }
 
-    public void runEnterAnimation() {
-        final long duration = (long) (ANIM_DURATION);
-
+    public void startEnterAnimation() {
         mImgPreview.setPivotX(0);
         mImgPreview.setPivotY(0);
         mImgPreview.setScaleX(mWidthScale);
@@ -98,15 +100,14 @@ public class DetailActivity extends Activity {
         mImgPreview.setTranslationX(mLeftDelta);
         mImgPreview.setTranslationY(mTopDelta);
 
-        mImgPreview.animate().setDuration(duration).
-                scaleX(1).scaleY(1).
-                translationX(0).translationY(0).
-                setInterpolator(sDecelerator);
+        ViewPropertyAnimator.animate(mImgPreview)
+                .setDuration(ANIMATION_DURATION)
+                .scaleX(1).scaleY(1)
+                .translationX(0).translationY(0)
+                .setInterpolator(decelerateInterpolator);
     }
 
-    public void runExitAnimation(final Runnable endAction) {
-        final long duration = (long) (ANIM_DURATION);
-
+    public void startExitAnimation() {
         final boolean fadeOut;
         if (getResources().getConfiguration().orientation != mOriginalOrientation) {
             mImgPreview.setPivotX(mImgPreview.getWidth() / 2);
@@ -118,10 +119,18 @@ public class DetailActivity extends Activity {
             fadeOut = false;
         }
 
-        mImgPreview.animate().setDuration(duration).
-                scaleX(mWidthScale).scaleY(mHeightScale).
-                translationX(mLeftDelta).translationY(mTopDelta).
-                withEndAction(endAction);
+        ViewPropertyAnimator.animate(mImgPreview)
+                .setDuration(ANIMATION_DURATION)
+                .scaleX(mWidthScale).scaleY(mHeightScale)
+                .translationX(mLeftDelta).translationY(mTopDelta)
+                .setInterpolator(decelerateInterpolator)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        finish();
+                    }
+                });
+
         if (fadeOut) {
             mImgPreview.animate().alpha(0);
         }
@@ -129,11 +138,7 @@ public class DetailActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        runExitAnimation(new Runnable() {
-            public void run() {
-                finish();
-            }
-        });
+        startExitAnimation();
     }
 
     @Override

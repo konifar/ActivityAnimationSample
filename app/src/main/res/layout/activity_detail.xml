@@ -1,29 +1,15 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/topLevelLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#ffffff">
 
-    <RelativeLayout
+    <com.konifar.activitytransitionsample.AspectRatioImageView
+        android:id="@+id/img_preview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#ffffff"
-        android:visibility="visible">
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:scaleType="centerCrop"
+        app:imageRatio="1" />
 
-        <TextView
-            android:id="@+id/txt_description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/img_preview" />
-
-        <com.konifar.activitytransitionsample.AspectRatioImageView
-            android:id="@+id/img_preview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:scaleType="centerCrop"
-            app:imageRatio="1" />
-
-    </RelativeLayout>
-</FrameLayout>
+</RelativeLayout>
