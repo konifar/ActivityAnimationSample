@@ -12,14 +12,12 @@
         app:imageRatio="1" />
 
     <View
-        android:id="@+id/clicker_img_preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignBottom="@id/img_preview"
         android:layout_alignLeft="@id/img_preview"
         android:layout_alignRight="@id/img_preview"
         android:layout_alignTop="@id/img_preview"
-        android:background="#16000000"
-        android:clickable="true" />
+        android:background="@drawable/bg_feedback" />
 
 </RelativeLayout>

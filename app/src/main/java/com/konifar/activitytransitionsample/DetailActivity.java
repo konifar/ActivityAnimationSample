@@ -2,6 +2,7 @@ package com.konifar.activitytransitionsample;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -94,13 +95,22 @@ public class DetailActivity extends Activity {
     }
 
     public void startEnterAnimation() {
-        AnimatorProxy proxy = AnimatorProxy.wrap(mImgPreview);
-        proxy.setPivotX(0);
-        proxy.setPivotY(0);
-        proxy.setScaleX(mWidthScale);
-        proxy.setScaleY(mHeightScale);
-        proxy.setTranslationX(mLeftDelta);
-        proxy.setTranslationY(mTopDelta);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            mImgPreview.setPivotX(0);
+            mImgPreview.setPivotY(0);
+            mImgPreview.setScaleX(mWidthScale);
+            mImgPreview.setScaleY(mHeightScale);
+            mImgPreview.setTranslationX(mLeftDelta);
+            mImgPreview.setTranslationY(mTopDelta);
+        } else {
+            AnimatorProxy proxy = AnimatorProxy.wrap(mImgPreview);
+            proxy.setPivotX(0);
+            proxy.setPivotY(0);
+            proxy.setScaleX(mWidthScale);
+            proxy.setScaleY(mHeightScale);
+            proxy.setTranslationX(mLeftDelta);
+            proxy.setTranslationY(mTopDelta);
+        }
 
         ViewPropertyAnimator.animate(mImgPreview)
                 .setDuration(ANIMATION_DURATION)
@@ -112,9 +122,14 @@ public class DetailActivity extends Activity {
     public void startExitAnimation() {
         final boolean fadeOut;
         if (getResources().getConfiguration().orientation != mOriginalOrientation) {
-            AnimatorProxy proxy = AnimatorProxy.wrap(mImgPreview);
-            proxy.setPivotX(mImgPreview.getWidth() / 2);
-            proxy.setPivotY(mImgPreview.getHeight() / 2);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                mImgPreview.setPivotX(mImgPreview.getWidth() / 2);
+                mImgPreview.setPivotY(mImgPreview.getHeight() / 2);
+            } else {
+                AnimatorProxy proxy = AnimatorProxy.wrap(mImgPreview);
+                proxy.setPivotX(mImgPreview.getWidth() / 2);
+                proxy.setPivotY(mImgPreview.getHeight() / 2);
+            }
             mLeftDelta = 0;
             mTopDelta = 0;
             fadeOut = true;
@@ -135,7 +150,7 @@ public class DetailActivity extends Activity {
                 });
 
         if (fadeOut) {
-            mImgPreview.animate().alpha(0);
+            ViewPropertyAnimator.animate(mImgPreview).alpha(0);
         }
     }
 
