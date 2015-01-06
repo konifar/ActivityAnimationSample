@@ -16,16 +16,12 @@
 
 package com.konifar.activitytransitionsample;
 
-import android.graphics.Bitmap;
+public class PhotoModel {
 
-public class PictureData {
-    int resourceId;
-    String description;
-    Bitmap thumbnail;
+    final int resId;
 
-    public PictureData(int resourceId, String description, Bitmap thumbnail) {
-        this.resourceId = resourceId;
-        this.description = description;
-        this.thumbnail = thumbnail;
+    public PhotoModel(int resId) {
+        this.resId = resId;
     }
+
 }
