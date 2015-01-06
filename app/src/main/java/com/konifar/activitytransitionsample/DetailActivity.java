@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.AnimatorListenerAdapter;
 import com.nineoldandroids.view.ViewPropertyAnimator;
+import com.nineoldandroids.view.animation.AnimatorProxy;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -93,12 +94,13 @@ public class DetailActivity extends Activity {
     }
 
     public void startEnterAnimation() {
-        mImgPreview.setPivotX(0);
-        mImgPreview.setPivotY(0);
-        mImgPreview.setScaleX(mWidthScale);
-        mImgPreview.setScaleY(mHeightScale);
-        mImgPreview.setTranslationX(mLeftDelta);
-        mImgPreview.setTranslationY(mTopDelta);
+        AnimatorProxy proxy = AnimatorProxy.wrap(mImgPreview);
+        proxy.setPivotX(0);
+        proxy.setPivotY(0);
+        proxy.setScaleX(mWidthScale);
+        proxy.setScaleY(mHeightScale);
+        proxy.setTranslationX(mLeftDelta);
+        proxy.setTranslationY(mTopDelta);
 
         ViewPropertyAnimator.animate(mImgPreview)
                 .setDuration(ANIMATION_DURATION)
@@ -110,8 +112,9 @@ public class DetailActivity extends Activity {
     public void startExitAnimation() {
         final boolean fadeOut;
         if (getResources().getConfiguration().orientation != mOriginalOrientation) {
-            mImgPreview.setPivotX(mImgPreview.getWidth() / 2);
-            mImgPreview.setPivotY(mImgPreview.getHeight() / 2);
+            AnimatorProxy proxy = AnimatorProxy.wrap(mImgPreview);
+            proxy.setPivotX(mImgPreview.getWidth() / 2);
+            proxy.setPivotY(mImgPreview.getHeight() / 2);
             mLeftDelta = 0;
             mTopDelta = 0;
             fadeOut = true;
